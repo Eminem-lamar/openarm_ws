@@ -197,6 +197,7 @@
         </xacro:if>
 
   </xacro:macro>
+<<<<<<< HEAD
 <link name="camera_link">
     <visual>
       <geometry><box size="0.02 0.09 0.025"/></geometry>
@@ -210,3 +211,6 @@
     <origin xyz="0.6 0.0 1.0" rpy="0 0.785 3.1415"/>
   </joint>
 </robot>
+=======
+</robot>
+>>>>>>> aff733e648f7db4132402974620806032e944173
