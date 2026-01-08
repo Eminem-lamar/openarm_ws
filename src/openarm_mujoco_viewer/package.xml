@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>openarm_mujoco_viewer</name>
+  <version>0.0.1</version>
+  <description>OpenArm bimanual MuJoCo viewer synchronized with ROS2 joint_states.</description>
+  <maintainer email="user@example.com">openarm_user</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+
+  <!-- MuJoCo, glfw, numpy are Python dependencies and should be installed via pip or system packages. -->
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
