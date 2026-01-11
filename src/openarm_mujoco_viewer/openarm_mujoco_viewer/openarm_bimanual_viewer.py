@@ -24,7 +24,7 @@ class OpenArmBimanualViewer(Node):
         )
 
         # Path to MuJoCo scene.xml. Adjust here if your workspace path differs.
-        default_scene_path = "/home/zjc/openarm_ws/openarm_mujoco/v1/scene.xml"
+        default_scene_path = "/home/chenwei/openarm_ws/openarm_mujoco/v1/scene.xml"
         self.declare_parameter("scene_path", default_scene_path)
         scene_path = self.get_parameter("scene_path").get_parameter_value().string_value
 

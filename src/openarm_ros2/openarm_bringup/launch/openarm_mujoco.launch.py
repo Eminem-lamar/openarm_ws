@@ -2,9 +2,7 @@ import os
 import xacro
 
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, RegisterEventHandler
-from launch.event_handlers import OnProcessStart, OnProcessExit
-
+from launch.actions import TimerAction
 from ament_index_python.packages import get_package_share_directory
 
 from launch_ros.actions import Node
@@ -40,8 +38,17 @@ def generate_launch_description():
         "openarm_v10_controllers.yaml",
     )
 
-    # MuJoCo model path for OpenArm
-    mujoco_model_path = "/home/zjc/openarm_ws/openarm_mujoco/v1/openarm.xml"
+    # 使用动态路径查找MuJoCo模型
+    current_file_dir = os.path.dirname(os.path.abspath(__file__))
+    workspace_root = os.path.abspath(os.path.join(current_file_dir, '../../../../..'))
+    mujoco_model_path = os.path.join(workspace_root, "openarm_mujoco", "v1", "openarm.xml")
+    
+    # Verify file exists
+    if not os.path.exists(mujoco_model_path):
+        raise FileNotFoundError(
+            f"MuJoCo model file not found: {mujoco_model_path}\n"
+            f"Please ensure the openarm_mujoco directory is in the workspace root."
+        )
 
     node_mujoco_ros2_control = Node(
         package="mujoco_ros2_control",
@@ -66,26 +73,37 @@ def generate_launch_description():
         ],
     )
 
-    load_joint_state_controller = ExecuteProcess(
-        cmd=[
-            "ros2",
-            "control",
-            "load_controller",
-            "--set-state",
-            "active",
+    # 使用controller_manager的spawner节点加载控制器（更健壮的方式）
+    jsb_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
             "joint_state_broadcaster",
+            "--controller-manager",
+            "/controller_manager",
         ],
         output="screen",
     )
 
-    load_robot_controller = ExecuteProcess(
-        cmd=[
-            "ros2",
-            "control",
-            "load_controller",
-            "--set-state",
-            "active",
+    arm_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
             "joint_trajectory_controller",
+            "-c",
+            "/controller_manager",
+        ],
+        output="screen",
+    )
+
+    # 添加夹爪控制器加载
+    gripper_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "gripper_controller",
+            "-c",
+            "/controller_manager",
         ],
         output="screen",
     )
@@ -105,22 +123,14 @@ def generate_launch_description():
         arguments=["-d", rviz_config_file],
     )
 
+    # 使用TimerAction确保控制器按顺序加载
     return LaunchDescription(
         [
-            RegisterEventHandler(
-                event_handler=OnProcessStart(
-                    target_action=node_mujoco_ros2_control,
-                    on_start=[load_joint_state_controller],
-                )
-            ),
-            RegisterEventHandler(
-                event_handler=OnProcessExit(
-                    target_action=load_joint_state_controller,
-                    on_exit=[load_robot_controller],
-                )
-            ),
             node_mujoco_ros2_control,
             node_robot_state_publisher,
             rviz_node,
+            TimerAction(period=2.0, actions=[jsb_spawner]),
+            TimerAction(period=3.0, actions=[arm_controller_spawner]),
+            TimerAction(period=3.5, actions=[gripper_controller_spawner]),
         ]
     )

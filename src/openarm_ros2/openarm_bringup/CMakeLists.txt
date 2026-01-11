@@ -11,6 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# 手动指定MuJoCo 3.4.0的安装路径
+set(MUJOCO_INSTALL_DIR $ENV{HOME}/.mujoco/mujoco340)
+# 添加头文件路径
+include_directories(${MUJOCO_INSTALL_DIR}/include)
+# 添加库文件路径
+link_directories(${MUJOCO_INSTALL_DIR}/bin)
 
 cmake_minimum_required(VERSION 3.22)
 project(openarm_bringup)

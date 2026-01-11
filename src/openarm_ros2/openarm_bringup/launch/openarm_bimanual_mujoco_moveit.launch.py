@@ -54,7 +54,24 @@ def generate_launch_description():
     )
 
     # === 2. MuJoCo ros2_control backend (no internal rendering) ===
-    mujoco_model_path = "/home/zjc/openarm_ws/openarm_mujoco/v1/scene.xml"
+    # Get workspace path from environment variable or use default relative path
+    workspace_path = os.environ.get('COLCON_PREFIX_PATH', '')
+    if workspace_path:
+        # Extract workspace root from install path (remove /install)
+        workspace_root = workspace_path.split('/install')[0]
+    else:
+        # Fallback: try to find workspace by going up from this file
+        current_file_dir = os.path.dirname(os.path.abspath(__file__))
+        workspace_root = os.path.abspath(os.path.join(current_file_dir, '../../../../..'))
+    
+    mujoco_model_path = os.path.join(workspace_root, "openarm_mujoco", "v1", "scene.xml")
+    
+    # Verify file exists
+    if not os.path.exists(mujoco_model_path):
+        raise FileNotFoundError(
+            f"MuJoCo model file not found: {mujoco_model_path}\n"
+            f"Please ensure the openarm_mujoco directory is in the workspace root."
+        )
 
     node_mujoco_ros2_control = Node(
         package="mujoco_ros2_control",

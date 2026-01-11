@@ -94,7 +94,7 @@
       <origin xyz="0.04 0.0 0.62" rpy="3.14 0.78 1.57"/>
       <geometry>
         <!-- Use D435 mesh from openarm_mujoco (under v1/meshes/visual/cam) -->
-        <mesh filename="file:///home/zjc/openarm_ws/openarm_mujoco/v1/meshes/visual/cam/d435_0.stl"/>
+        <mesh filename="file:///home/chenwei/openarm_ws/openarm_mujoco/v1/meshes/visual/cam/d435_0.stl"/>
       </geometry>
       <material name="d435_material">
         <color rgba="0.8 0.8 0.8 1.0"/>
@@ -156,7 +156,7 @@
       <origin xyz="0.35 0 0.35" rpy="0 0 1.57"/>
       <geometry>
         <!-- Absolute path to banana mesh in openarm_mujoco -->
-        <mesh filename="file:///home/zjc/openarm_ws/openarm_mujoco/v1/meshes/011_banana/textured_simple.obj"/>
+        <mesh filename="file:///home/chenwei/openarm_ws/openarm_mujoco/v1/meshes/011_banana/textured_simple.obj"/>
       </geometry>
     </visual>
   </link>
