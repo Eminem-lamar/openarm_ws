@@ -177,18 +177,21 @@ class GraspPlanner(Node):
         position_constraint.header.stamp = self.get_clock().now().to_msg()
         position_constraint.link_name = "openarm_left_link7"  # 末端执行器链接
         
-        # 设置目标位置（使用 target_point_offset 方式，更符合 MoveIt 规范）
+        # 设置目标位置（将区域中心直接放在目标点，offset 设为0）
         target_pos = grasp_pose.grasp_pose.pose.position
-        position_constraint.target_point_offset.x = target_pos.x
-        position_constraint.target_point_offset.y = target_pos.y
-        position_constraint.target_point_offset.z = target_pos.z
+        position_constraint.target_point_offset.x = 0.0
+        position_constraint.target_point_offset.y = 0.0
+        position_constraint.target_point_offset.z = 0.0
         
-        # 约束区域（立方体，增大容差以提高规划成功率）
         box_constraint = SolidPrimitive()
         box_constraint.type = SolidPrimitive.BOX
-        box_constraint.dimensions = [0.02, 0.02, 0.02]  # 2cm 容差（从1cm增加到2cm）
+        box_constraint.dimensions = [0.02, 0.02, 0.02]
+        region_pose = Pose()
+        region_pose.position.x = target_pos.x
+        region_pose.position.y = target_pos.y
+        region_pose.position.z = target_pos.z
         position_constraint.constraint_region.primitives = [box_constraint]
-        position_constraint.constraint_region.primitive_poses = [Pose()]  # 位置在原点，通过 target_point_offset 指定
+        position_constraint.constraint_region.primitive_poses = [region_pose]
         position_constraint.weight = 1.0
         
         # 姿态约束（增大容差以提高规划成功率）
@@ -503,9 +506,8 @@ class GraspPlanner(Node):
     
     def execute_trajectory(self, trajectory):
         """通过 Action 接口执行轨迹"""
-        # 检查服务器是否就绪（不阻塞）
-        if not self.trajectory_client.server_is_ready():
-            self.get_logger().error('轨迹控制器未就绪')
+        if not self.trajectory_client.wait_for_server(timeout_sec=5.0):
+            self.get_logger().error('轨迹控制器未就绪: /left_joint_trajectory_controller/follow_joint_trajectory')
             return False
         
         # 创建 Action goal

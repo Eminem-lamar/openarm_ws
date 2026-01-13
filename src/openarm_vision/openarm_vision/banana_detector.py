@@ -23,7 +23,8 @@ class BananaDetector(Node):
         self.get_logger().info('Banana Detector: Simplified Mode')
 
     def process(self, msg):
-        if self.depth is None or self.k is None: return
+        if self.depth is None or self.k is None:
+            return
 
         # 视觉识别 (HSV)
         hsv = cv2.cvtColor(self.bridge.imgmsg_to_cv2(msg, 'bgr8'), cv2.COLOR_BGR2HSV)
@@ -43,23 +44,33 @@ class BananaDetector(Node):
             y_cam = (cy - self.k[1,2]) * z_cam / self.k[1,1]
 
             try:
-                # 坐标变换与补正逻辑
-                trans = self.tf_buffer.lookup_transform('openarm_body_link0', 'd435_optical_frame', rclpy.time.Time())
-                p = do_transform_point(PointStamped(header=msg.header, point=Point(x=x_cam, y=float(y_cam), z=float(z_cam))), trans).point
-                
-                # 几何补正逻辑 (如果计算结果偏离桌子，则手动投影)
-                fx = p.x if p.x > 0.1 else 0.04 + (z_cam * 0.96)
-                fz = p.z if p.x > 0.1 else 0.62 - (z_cam * 0.26)
+                # 坐标变换与补正逻辑（使用当前图像时间保证同步）
+                trans = self.tf_buffer.lookup_transform(
+                    'openarm_body_link0',
+                    'd435_optical_frame',
+                    msg.header.stamp,
+                    timeout=rclpy.duration.Duration(seconds=0.5)
+                )
 
-                self.get_logger().info(f'Target: [{fx:.3f}, {p.y:.3f}, {fz:.3f}]')
-                
-                # 发布 TF
+                ps = PointStamped()
+                ps.header.stamp = msg.header.stamp
+                ps.header.frame_id = 'd435_optical_frame'
+                ps.point = Point(x=x_cam, y=float(y_cam), z=float(z_cam))
+
+                p = do_transform_point(ps, trans).point
+                self.get_logger().info(f'Target(raw): [{p.x:.3f}, {p.y:.3f}, {p.z:.3f}]')
+
+                # 发布 TF（直接使用变换结果，不再套用手动补正公式）
                 t = TransformStamped(header=msg.header)
-                t.header.frame_id, t.child_frame_id = 'openarm_body_link0', 'banana_target'
-                t.transform.translation.x, t.transform.translation.y, t.transform.translation.z = fx, p.y, fz
+                t.header.frame_id = 'openarm_body_link0'
+                t.child_frame_id = 'banana_target'
+                t.transform.translation.x = p.x
+                t.transform.translation.y = p.y
+                t.transform.translation.z = p.z
                 t.transform.rotation.w = 1.0
                 self.tf_pub.sendTransform(t)
-            except: pass
+            except Exception as e:
+                self.get_logger().warn(f'TF transform failed: {e}')
 
 from geometry_msgs.msg import Point # 补充导入
 def main():

@@ -71,9 +71,16 @@ class VirtualCamera(Node):
             # 仅在调试时关注 TF 错误，避免刷屏
             pass
 
-        # 发布消息
-        self.color_pub.publish(self.bridge.cv2_to_imgmsg(img_color, 'bgr8', header=None))
-        self.depth_pub.publish(self.bridge.cv2_to_imgmsg(img_depth, '32FC1'))
+        # 发布消息（确保 header 正确，否则 TF 变换会失败）
+        color_msg = self.bridge.cv2_to_imgmsg(img_color, 'bgr8')
+        color_msg.header.stamp = now
+        color_msg.header.frame_id = "d435_optical_frame"
+        self.color_pub.publish(color_msg)
+
+        depth_msg = self.bridge.cv2_to_imgmsg(img_depth, '32FC1')
+        depth_msg.header.stamp = now
+        depth_msg.header.frame_id = "d435_optical_frame"
+        self.depth_pub.publish(depth_msg)
         
         info = CameraInfo()
         info.header.stamp = now
