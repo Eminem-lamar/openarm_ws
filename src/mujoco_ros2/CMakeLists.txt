@@ -3,8 +3,8 @@
 ####################################################################################################
 cmake_minimum_required(VERSION 3.5)
 # 强制指定MuJoCo 3.4.0的绝对路径（请确认路径与你的实际安装路径一致）
-set(MUJOCO_INCLUDE_DIR "/home/chenwei/.mujoco/mujoco340/include")
-set(MUJOCO_LIB_DIR "/home/chenwei/.mujoco/mujoco340/bin")
+set(MUJOCO_INCLUDE_DIR "/home/zjc/.mujoco/mujoco340/include")
+set(MUJOCO_LIB_DIR "/home/zjc/.mujoco/mujoco340/bin")
 
 # 手动添加头文件路径（优先级最高，解决找不到mujoco.h的问题）
 include_directories(
@@ -38,7 +38,7 @@ find_package(sensor_msgs REQUIRED)                                              
 find_package(std_msgs REQUIRED)                                                                     # std_msgs::msg::Float64MultiArray
 
 # MuJoCo
-set(MUJOCO_PATH "/home/chenwei/.mujoco/mujoco340") # UPDATE THIS TO YOUR MUJOCO PATH
+set(MUJOCO_PATH "/home/zjc/.mujoco/mujoco340") # UPDATE THIS TO YOUR MUJOCO PATH
 include_directories(include)                                                                        # Local header files
 include_directories(${MUJOCO_PATH}/include/mujoco)                                                  # MuJoCo header files
 include_directories(${MUJOCO_PATH}/include)                                                         # Additional MuJoCo header files

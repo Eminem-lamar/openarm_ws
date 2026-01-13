@@ -16,7 +16,7 @@ scene = gs.Scene(show_viewer=True)
 # 添加实体
 plane = scene.add_entity(gs.morphs.Plane())
 franka = scene.add_entity(
-    gs.morphs.MJCF(file='/home/chenwei/openarm_ws/openarm_mujoco/v1/scene.xml'),
+    gs.morphs.MJCF(file='/home/zjc/openarm_ws/openarm_mujoco/v1/scene.xml'),
 )
 
 # 构建并运行

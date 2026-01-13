@@ -109,7 +109,7 @@ class GripperController(Node):
             # 发送 goal（异步，不等待结果）
             # 在服务回调中，我们不能阻塞等待 Action 的结果
             # 只要服务器就绪，就发送命令并假设成功
-        future = client.send_goal_async(goal_msg)
+            future = client.send_goal_async(goal_msg)
         
             # 使用回调记录结果（但不阻塞）
             def goal_response_callback(future):

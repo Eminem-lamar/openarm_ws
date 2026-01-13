@@ -2,7 +2,7 @@ import mujoco
 import mujoco.viewer
 import time
 
-model = mujoco.MjModel.from_xml_path('/home/ldp/openarm_ws/openarm_mujoco/v1/scene.xml')
+model = mujoco.MjModel.from_xml_path('/home/zjc/openarm_ws/openarm_mujoco/v1/scene.xml')
 data   = mujoco.MjData(model)
 
 # 获取执行器索引

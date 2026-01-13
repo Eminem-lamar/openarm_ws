@@ -70,7 +70,7 @@
     <visual>
       <origin xyz="0.04 0.0 0.62" rpy="3.14 1.3 0"/>
       <geometry>
-        <mesh filename="file:///home/ros/openarm_ws/openarm_mujoco/v1/meshes/visual/cam/d435_0.stl"/>
+        <mesh filename="file:///home/zjc/openarm_ws/openarm_mujoco/v1/meshes/visual/cam/d435_0.stl"/>
       </geometry>
       <material name="d435_material">
         <color rgba="0.8 0.8 0.8 1.0"/>
@@ -123,7 +123,7 @@
     <visual>
       <origin xyz="0.35 0 0.35" rpy="0 0 1.57"/>
       <geometry>
-        <mesh filename="file:///home/chenwei/openarm_ws/openarm_mujoco/v1/meshes/011_banana/textured_simple.obj"/>
+        <mesh filename="file:///home/zcj/openarm_ws/openarm_mujoco/v1/meshes/011_banana/textured_simple.obj"/>
       </geometry>
     </visual>
     <collision>
