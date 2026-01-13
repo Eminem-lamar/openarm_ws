@@ -85,29 +85,29 @@ def generate_launch_description():
     # 启动顺序说明：
     # - bringup_launch 立即启动，内部会在 3.5 秒后启动 gripper controllers
     # - 5 秒后启动虚拟相机（提供图像数据）
-    # - 8 秒后启动视觉检测和抓取规划模块（此时基础环境和相机已稳定）
-    # - 12 秒后启动夹爪控制器和全流程验证系统（确保 gripper controllers 已就绪）
+    # - 20 秒后启动视觉检测和抓取规划模块（确保 move_group 完全初始化）
+    # - 20 秒后启动夹爪控制器和全流程验证系统（确保控制器已就绪）
     return LaunchDescription(
         [
             # 首先启动 MuJoCo + MoveIt 基础环境
             bringup_launch,
-            
+
             # 延迟启动虚拟相机，确保基础环境已启动
             TimerAction(
                 period=5.0,  # 给 MuJoCo 基础环境时间启动
                 actions=[virtual_camera_node],
             ),
-            
+
             # 延迟启动视觉模块和抓取规划模块，确保基础环境和相机已完全启动
-            # 注意：move_group 需要更多时间启动，所以延迟到 15 秒
+            # 注意：move_group 需要更多时间启动，所以延迟到 20 秒
             TimerAction(
-                period=15.0,  # 给 move_group 更多时间启动（move_group 通常在 5-10 秒后完全就绪）
+                period=20.0,  # 给 move_group 更多时间启动（从15秒增加到20秒）
                 actions=[vision_node, grasp_planner_node],
             ),
-            
-            # 再延迟启动夹爪控制器和全流程验证系统，确保控制器已就绪
+
+            # 延迟启动夹爪控制器和全流程验证系统，确保控制器已就绪
             TimerAction(
-                period=12.0,  # 确保 gripper controllers（3.5秒启动）已完全就绪
+                period=20.0,  # 确保所有控制器完全就绪（从12秒增加到20秒）
                 actions=[gripper_controller_node, full_verification_node],
             ),
         ]

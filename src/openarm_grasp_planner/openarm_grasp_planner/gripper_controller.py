@@ -109,8 +109,8 @@ class GripperController(Node):
             # 发送 goal（异步，不等待结果）
             # 在服务回调中，我们不能阻塞等待 Action 的结果
             # 只要服务器就绪，就发送命令并假设成功
-        future = client.send_goal_async(goal_msg)
-        
+            future = client.send_goal_async(goal_msg)
+
             # 使用回调记录结果（但不阻塞）
             def goal_response_callback(future):
                 try:
@@ -124,7 +124,7 @@ class GripperController(Node):
                         self.get_logger().warn(f'{arm_side}夹爪控制命令被拒绝')
                 except Exception as e:
                     self.get_logger().error(f'{arm_side}夹爪控制命令处理异常: {str(e)}')
-            
+
             future.add_done_callback(goal_response_callback)
             
             # 立即返回成功（不等待 future 完成）

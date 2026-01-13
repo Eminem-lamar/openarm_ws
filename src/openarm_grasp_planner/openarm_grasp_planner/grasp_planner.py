@@ -142,7 +142,7 @@ class GraspPlanner(Node):
             JointTrajectory: 规划好的轨迹，如果失败返回 None
         """
         # 检查 MoveIt Action 服务器是否就绪
-        wait_timeout = 15.0
+        wait_timeout = 30.0
         self.get_logger().info(f'等待 MoveIt Action 服务器就绪 (/move_action)，最多等待 {wait_timeout} 秒...')
         
         if not self.moveit_action_client.wait_for_server(timeout_sec=wait_timeout):
@@ -163,9 +163,9 @@ class GraspPlanner(Node):
         
         # 设置规划组（左臂）
         goal_msg.request.group_name = "left_arm"
-        goal_msg.request.num_planning_attempts = 5  # 减少尝试次数，提高响应速度
-        goal_msg.request.allowed_planning_time = 10.0  # 增加规划时间，提高成功率
-        goal_msg.request.planner_id = ""  # 使用空字符串，让MoveIt使用默认规划器配置
+        goal_msg.request.num_planning_attempts = 10  # 增加尝试次数
+        goal_msg.request.allowed_planning_time = 20.0  # 增加规划时间，提高成功率
+        goal_msg.request.planner_id = "RRTConnect"  # 明确指定规划器
         # 注意：ROS2 MoveIt 中碰撞检测默认开启，不需要设置 avoid_collisions 属性
         
         # 创建目标约束（位置和姿态）
@@ -186,7 +186,7 @@ class GraspPlanner(Node):
         # 约束区域（立方体，增大容差以提高规划成功率）
         box_constraint = SolidPrimitive()
         box_constraint.type = SolidPrimitive.BOX
-        box_constraint.dimensions = [0.02, 0.02, 0.02]  # 2cm 容差（从1cm增加到2cm）
+        box_constraint.dimensions = [0.05, 0.05, 0.05]  # 5cm 容差（从2cm增加到5cm）
         position_constraint.constraint_region.primitives = [box_constraint]
         position_constraint.constraint_region.primitive_poses = [Pose()]  # 位置在原点，通过 target_point_offset 指定
         position_constraint.weight = 1.0
@@ -197,10 +197,10 @@ class GraspPlanner(Node):
         orientation_constraint.header.stamp = self.get_clock().now().to_msg()
         orientation_constraint.link_name = "openarm_left_link7"
         orientation_constraint.orientation = grasp_pose.grasp_pose.pose.orientation
-        # 增大姿态容差（从0.1增加到0.2弧度，约11.5度）
-        orientation_constraint.absolute_x_axis_tolerance = 0.2
-        orientation_constraint.absolute_y_axis_tolerance = 0.2
-        orientation_constraint.absolute_z_axis_tolerance = 0.2
+        # 放宽姿态容差（从0.2增加到0.5弧度，约28.6度）
+        orientation_constraint.absolute_x_axis_tolerance = 0.5
+        orientation_constraint.absolute_y_axis_tolerance = 0.5
+        orientation_constraint.absolute_z_axis_tolerance = 0.5
         orientation_constraint.weight = 1.0
         
         constraints.position_constraints = [position_constraint]
@@ -252,8 +252,8 @@ class GraspPlanner(Node):
             executor = rclpy.executors.SingleThreadedExecutor()
             executor.add_node(self)
             
-            # 等待结果（增加超时时间到 20 秒，因为规划可能需要更长时间）
-            result_timeout = 20.0
+            # 等待结果（增加超时时间到 30 秒，因为规划可能需要更长时间）
+            result_timeout = 30.0
             self.get_logger().info(f'等待规划结果，最多等待 {result_timeout} 秒...')
             
             try:

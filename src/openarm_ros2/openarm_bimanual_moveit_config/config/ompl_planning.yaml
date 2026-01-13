@@ -1,0 +1,66 @@
+# Copyright 2025 Enactic, Inc.
+#
+# Licensed under Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with License.
+# You may obtain a copy of License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See License for specific language governing permissions and
+# limitations under the License.
+
+# OMPL Planning Configuration for OpenArm Bimanual
+# This configuration provides better planning parameters to avoid timeouts
+
+planner_configs:
+  # RRT Connect planner - good for manipulators
+  RRTConnect:
+    type: geometric::RRTConnect
+    range: 0.0
+    # Range parameter: maximum distance between two states (0.0 = auto)
+
+  # RRT planner
+  RRT:
+    type: geometric::RRT
+    goal_bias: 0.05
+
+  # PRM planner - good for multiple queries
+  PRM:
+    type: geometric::PRM
+    max_nearest_neighbors: 10
+
+  # RRT Star - often finds better paths
+  RRTstar:
+    type: geometric::RRTstar
+    goal_bias: 0.05
+    range: 0.0
+    delay_collision_checking: 0
+    tree_pruning: True
+
+# Planning group configurations
+left_arm:
+  default_planner_config: RRTConnect
+  planner_configs:
+    - RRTConnect
+    - RRT
+    - RRTstar
+  projection_evaluator: joints(openarm_left_joint1,openarm_left_joint2,openarm_left_joint3,openarm_left_joint4,openarm_left_joint5,openarm_left_joint6,openarm_left_joint7)
+  longest_valid_segment_fraction: 0.005
+
+right_arm:
+  default_planner_config: RRTConnect
+  planner_configs:
+    - RRTConnect
+    - RRT
+    - RRTstar
+  projection_evaluator: joints(openarm_right_joint1,openarm_right_joint2,openarm_right_joint3,openarm_right_joint4,openarm_right_joint5,openarm_right_joint6,openarm_right_joint7)
+  longest_valid_segment_fraction: 0.005
+
+left_gripper:
+  default_planner_config: RRTConnect
+
+right_gripper:
+  default_planner_config: RRTConnect
