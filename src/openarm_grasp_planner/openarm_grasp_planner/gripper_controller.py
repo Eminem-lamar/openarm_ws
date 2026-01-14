@@ -12,8 +12,11 @@ class GripperController(Node):
         # 夹爪状态参数（根据 SRDF 定义：0.0=闭合，0.060=更大打开）
         # 注意：位置值表示手指分开的距离，0.0 表示闭合，0.060 表示完全打开
         self.gripper_open_position = 0.060  # 夹爪打开位置（手指分开）
-        self.gripper_closed_position = 0.0  # 夹爪闭合位置（手指靠拢）
-        self.gripper_max_effort = 50.0  # 最大抓取力
+        self.gripper_closed_position = 0.0  # 夹爪完全闭合位置（手指靠拢）
+        # 夹爪抓取位置：不完全关闭，只关闭到能夹住香蕉的程度（约0.02-0.03米）
+        # 香蕉直径约为0.04米，所以关闭到0.03米可以夹住香蕉
+        self.gripper_grasp_position = 0.03  # 夹爪抓取位置（能夹住香蕉但不完全关闭）
+        self.gripper_max_effort = 100.0  # 最大抓取力（增加以更好地夹住香蕉）
         
         # 创建Action客户端用于控制夹爪（双机械臂版本）
         self.left_gripper_client = ActionClient(
@@ -68,21 +71,28 @@ class GripperController(Node):
     
     def control_gripper_callback(self, request, response):
         """处理夹爪控制服务请求（只控制左夹爪）"""
-        self.get_logger().info(f'收到夹爪控制请求: {"闭合" if request.data else "打开"}')
+        action = "抓取" if request.data else "打开"
+        self.get_logger().info(f'收到夹爪控制请求: {action}')
         
-        # 设置目标位置
-        target_position = self.gripper_closed_position if request.data else self.gripper_open_position
-        
-        # 只发送Action请求到左夹爪（根据用户要求，不操作右夹爪）
-        left_result = self.send_gripper_command(self.left_gripper_client, target_position, "左")
+        if request.data:
+            # 抓取：直接关闭到抓取位置（不完全关闭，能夹住香蕉）
+            self.get_logger().info(f'关闭夹手到抓取位置: {self.gripper_grasp_position:.4f}米')
+            left_result = self.send_gripper_command(
+                self.left_gripper_client, 
+                self.gripper_grasp_position, 
+                "左"
+            )
+        else:
+            # 打开：直接打开到完全打开位置
+            left_result = self.send_gripper_command(self.left_gripper_client, self.gripper_open_position, "左")
         
         if left_result:
             response.success = True
-            response.message = f'左夹爪已{"闭合" if request.data else "打开"}'
+            response.message = f'左夹爪已{action}'
             self.get_logger().info(response.message)
         else:
             response.success = False
-            response.message = f'左夹爪{"闭合" if request.data else "打开"}失败'
+            response.message = f'左夹爪{action}失败'
             self.get_logger().error(response.message)
         
         return response
