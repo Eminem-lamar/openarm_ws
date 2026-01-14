@@ -64,6 +64,12 @@ void MujocoRendering::init(mjModel *mujoco_model, mjData *mujoco_data)
   mjv_defaultScene(&mjv_scn_);
   mjr_defaultContext(&mjr_con_);
 
+  // 在某些虚拟机 / Mesa 驱动环境下，MuJoCo 的 shadow framebuffer
+  // 可能无法创建，导致 "Shadow framebuffer is not complete" 直接报错退出。
+  // 真正决定是否创建 shadow FBO 的是 model.vis.quality.shadowsize，
+  // 将其设为 0 可以彻底关闭阴影 framebuffer，避免不兼容的 GPU/驱动报错。
+  mj_model_->vis.quality.shadowsize = 0;
+
   mjv_cam_.type = mjCAMERA_FREE;
   mjv_cam_.distance = 8.;
 

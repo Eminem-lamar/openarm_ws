@@ -82,7 +82,9 @@ def generate_launch_description():
             controllers_file_path,
             use_sim_time,
             {"mujoco_model_path": mujoco_model_path},
-            {"enable_rendering": False},
+            # 在 mujoco_ros2_control 内部启用 MuJoCo 渲染窗口，
+            # 这样显示的是“真实物理仿真”里的机器人和香蕉
+            {"enable_rendering": True},
         ],
     )
 
@@ -166,13 +168,16 @@ def generate_launch_description():
         output="screen",
     )
 
-    # === 4. Optional MuJoCo GUI viewer (subscribes to /joint_states) ===
-    mujoco_viewer_node = Node(
-        package="openarm_mujoco_viewer",
-        executable="openarm_bimanual_viewer",
-        output="screen",
-        parameters=[{"scene_path": mujoco_model_path}],
-    )
+    # === 4. 可选的独立 MuJoCo viewer（只根据 /joint_states 做前向运动学）===
+    # 开启上面的 enable_rendering=True 后，mujoco_ros2_control 本身已经有物理仿真窗口，
+    # 正常使用时可以不再启动额外的 openarm_mujoco_viewer，避免重复窗口。
+    # 如需保留旧的纯可视化窗口，可取消下面的注释。
+    # mujoco_viewer_node = Node(
+    #     package="openarm_mujoco_viewer",
+    #     executable="openarm_bimanual_viewer",
+    #     output="screen",
+    #     parameters=[{"scene_path": mujoco_model_path}],
+    # )
 
     # === 5. Compose launch description with simple timing for controllers ===
     # Give controller_manager inside mujoco_ros2_control a short time to
@@ -192,6 +197,5 @@ def generate_launch_description():
             delayed_set_move_group_time,
             move_group_launch,
             moveit_rviz_launch,
-            mujoco_viewer_node,
         ]
     )
