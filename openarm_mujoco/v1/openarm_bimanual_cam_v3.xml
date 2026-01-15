@@ -303,9 +303,20 @@
                             <inertial pos="0.0064528 -0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
                               mass="0.05"
                               diaginertia="0.0001 0.0001 0.0001" />
-                            <geom name="openarm_left_right_finger_collision"
+                            
+                            <!-- 修改：替换 mesh 碰撞为高摩擦力的软垫 Box -->
+                            <!-- <geom name="openarm_left_right_finger_collision"
                               pos="0.0 0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh"
-                              mesh="finger_collision_left" class="finger_collision" />
+                              mesh="finger_collision_left" class="finger_collision" /> -->
+                            
+                            <geom name="openarm_left_right_finger_pad"
+                              type="box" size="0.004 0.025 0.015"
+                              pos="0.0 0.025 0.02" 
+                              friction="3.0 0.1 0.005"
+                              solref="0.01 1" solimp="0.9 0.95 0.001"
+                              condim="4" margin="0.002"
+                              rgba="0.2 0.2 0.2 1" group="3" />
+
                             <geom name="openarm_left_right_finger_visual_0" pos="0.0 0.05 -0.673001"
                               quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh"
                               mesh="finger_0_flip.obj" class="visual" />
@@ -322,9 +333,20 @@
                             <inertial pos="0.0064528 0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
                               mass="0.05"
                               diaginertia="0.0001 0.0001 0.0001" />
-                            <geom name="openarm_left_left_finger_collision"
+                            
+                            <!-- 修改：左臂左指软垫 -->
+                            <!-- <geom name="openarm_left_left_finger_collision"
                               pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh"
-                              mesh="finger_collision" class="finger_collision" />
+                              mesh="finger_collision" class="finger_collision" /> -->
+                            
+                            <geom name="openarm_left_left_finger_pad"
+                              type="box" size="0.004 0.025 0.015"
+                              pos="0.0 -0.025 0.02" 
+                              friction="3.0 0.1 0.005"
+                              solref="0.01 1" solimp="0.9 0.95 0.001"
+                              condim="4" margin="0.002"
+                              rgba="0.2 0.2 0.2 1" group="3" />
+
                             <geom name="openarm_left_left_finger_visual_0" pos="0.0 -0.05 -0.673001"
                               quat="1.0 0.0 0.0 0.0" material="default_material" type="mesh"
                               mesh="finger_0.obj" class="visual" />
@@ -488,9 +510,20 @@
                             <inertial pos="0.0064528 -0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
                               mass="0.05"
                               diaginertia="0.0001 0.0001 0.0001" />
-                            <geom name="openarm_right_right_finger_collision"
+                            
+                            <!-- 修改：右臂右指软垫 -->
+                            <!-- <geom name="openarm_right_right_finger_collision"
                               pos="0.0 0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh"
-                              mesh="finger_collision_left" class="finger_collision" />
+                              mesh="finger_collision_left" class="finger_collision" /> -->
+                            
+                            <geom name="openarm_right_right_finger_pad"
+                              type="box" size="0.004 0.025 0.015"
+                              pos="0.0 0.025 0.02" 
+                              friction="3.0 0.1 0.005"
+                              solref="0.01 1" solimp="0.9 0.95 0.001"
+                              condim="4" margin="0.002"
+                              rgba="0.2 0.2 0.2 1" group="3" />
+
                             <geom name="openarm_right_right_finger_visual_0"
                               pos="0.0 0.05 -0.673001" quat="1.0 0.0 0.0 0.0"
                               material="default_material" type="mesh" mesh="finger_0_flip.obj"
@@ -508,9 +541,20 @@
                             <inertial pos="0.0064528 0.01702 0.0219685" quat="1.0 0.0 0.0 0.0"
                               mass="0.05"
                               diaginertia="0.0001 0.0001 0.0001" />
-                            <geom name="openarm_right_left_finger_collision"
+                            
+                            <!-- 修改：右臂左指软垫 -->
+                            <!-- <geom name="openarm_right_left_finger_collision"
                               pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0" type="mesh"
-                              mesh="finger_collision" class="finger_collision" />
+                              mesh="finger_collision" class="finger_collision" /> -->
+                            
+                            <geom name="openarm_right_left_finger_pad"
+                              type="box" size="0.004 0.025 0.015"
+                              pos="0.0 -0.025 0.02" 
+                              friction="3.0 0.1 0.005"
+                              solref="0.01 1" solimp="0.9 0.95 0.001"
+                              condim="4" margin="0.002"
+                              rgba="0.2 0.2 0.2 1" group="3" />
+
                             <geom name="openarm_right_left_finger_visual_0"
                               pos="0.0 -0.05 -0.673001" quat="1.0 0.0 0.0 0.0"
                               material="default_material" type="mesh" mesh="finger_0.obj"

@@ -1,5 +1,5 @@
 import rclpy
-from rclpy.node import Node 
+from rclpy.node import Node  
 from rclpy.action import ActionClient
 from rclpy.callback_groups import ReentrantCallbackGroup
 from control_msgs.action import GripperCommand
@@ -64,13 +64,15 @@ class GripperController(Node):
     def _wait_for_controllers(self):
         """后台等待控制器上线，仅作日志提示"""
         self.get_logger().info('正在连接夹爪控制器...')
-        if self.left_gripper_client.wait_for_server(timeout_sec=10.0):
-            self.get_logger().info('左夹爪控制器连接成功')
-        else:
-            self.get_logger().warn('左夹爪控制器连接超时(10s)，请检查 controller_manager 状态')
+        
+        # 循环等待直到连接成功
+        while not self.left_gripper_client.wait_for_server(timeout_sec=5.0):
+            self.get_logger().warn(f'左夹爪控制器未就绪... (等待中: {self.left_gripper_client._action_name})')
+        self.get_logger().info('左夹爪控制器连接成功')
 
-        if self.right_gripper_client.wait_for_server(timeout_sec=5.0):
-            self.get_logger().info('右夹爪控制器连接成功')
+        while not self.right_gripper_client.wait_for_server(timeout_sec=5.0):
+            self.get_logger().warn(f'右夹爪控制器未就绪... (等待中: {self.right_gripper_client._action_name})')
+        self.get_logger().info('右夹爪控制器连接成功')
 
     def joint_state_callback(self, msg):
         """获取夹爪当前位置"""
@@ -170,11 +172,11 @@ class GripperController(Node):
     
     def send_gripper_command(self, client, position, arm_side):
         """发送 Action 目标"""
-        # 修改点2：使用 wait_for_server 替代 server_is_ready
-        # 设置 2.0 秒超时，给控制器响应时间
-        if not client.wait_for_server(timeout_sec=2.0):
-            self.get_logger().error(f'{arm_side}夹爪控制器连接超时 (2s)，Action Server 可能未启动')
-            return False
+        # 修改：无限等待直到连接成功
+        if not client.server_is_ready():
+            self.get_logger().info(f'等待{arm_side}夹爪控制器连接...')
+            while not client.wait_for_server(timeout_sec=2.0):
+                self.get_logger().warn(f'{arm_side}夹爪控制器未连接，继续等待...')
 
         goal = GripperCommand.Goal()
         goal.command.position = position
