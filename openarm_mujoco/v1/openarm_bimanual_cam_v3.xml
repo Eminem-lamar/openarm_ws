@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<mujoco model="openarm">
+<mujoco model="openarm"> 
 
   <!-- 仿真参数：timestep 0.002 (500Hz) 保证稳定性 -->
   <option timestep="0.002" gravity="0 0 -9.81" iterations="50" tolerance="1e-4" />
@@ -564,12 +564,12 @@
   -->
 
   <!-- 启用手指之间的 equality 约束：finger_joint2 被动跟随 finger_joint1，保证两根手指同步开合 -->
-  <equality>
+  <!-- <equality>
     <joint joint1="openarm_right_finger_joint1" joint2="openarm_right_finger_joint2"
       solimp="0.95 0.99 0.001" solref="0.005 1" />
     <joint joint1="openarm_left_finger_joint1" joint2="openarm_left_finger_joint2"
       solimp="0.95 0.99 0.001" solref="0.005 1" />
-  </equality>
+  </equality> -->
 
 
   <actuator>
@@ -584,7 +584,7 @@
     
     <!-- 手指控制：仅对 finger_joint1 施加力，finger_joint2 通过 equality 约束被动跟随 -->
     <position name="left_finger1_ctrl" joint="openarm_left_finger_joint1" class="motor_finger" />
-    <!-- <position name="left_finger2_ctrl" joint="openarm_left_finger_joint2" class="motor_finger" /> -->
+    <position name="left_finger2_ctrl" joint="openarm_left_finger_joint2" class="motor_finger" />
 
     <!-- 右臂 -->
     <position name="right_joint1_ctrl" joint="openarm_right_joint1" kp="800" kv="10" forcerange="-40 40"/>
@@ -597,7 +597,7 @@
     
     <!-- 手指控制：仅对 finger_joint1 施加力，finger_joint2 通过 equality 约束被动跟随 -->
     <position name="right_finger1_ctrl" joint="openarm_right_finger_joint1" class="motor_finger" />
-    <!-- <position name="right_finger2_ctrl" joint="openarm_right_finger_joint2" class="motor_finger" /> -->
+    <position name="right_finger2_ctrl" joint="openarm_right_finger_joint2" class="motor_finger" />
   </actuator>
 
   <contact>
